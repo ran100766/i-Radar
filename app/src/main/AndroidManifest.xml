@@ -17,7 +17,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="GPS Compass"
+        android:label="i-Radar"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"

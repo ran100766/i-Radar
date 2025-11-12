@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">GPS_COMPAS</string>
+    <string name="app_name">i-Radar</string>
     <string name="point_info">%1$s  D: %2$d  T: %3$s</string>
 </resources>
