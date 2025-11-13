@@ -1,5 +1,5 @@
 // File: DialogUtils.kt
-package com.example.gps_compas
+package com.example.i_radar
 
 import android.app.Activity
 import android.widget.EditText

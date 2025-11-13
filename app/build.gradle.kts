@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gpscompass"
+    namespace = "com.example.i_radar"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gpscompass"
+        applicationId = "com.example.i_radar"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

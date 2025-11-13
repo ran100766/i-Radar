@@ -1,4 +1,4 @@
-package com.example.gpscompass
+package com.example.i_radar
 
 import android.location.Location
 

@@ -1,4 +1,4 @@
-package com.example.gpscompass
+package com.example.i_radar
 
 import android.Manifest
 import android.app.Notification
@@ -13,15 +13,14 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import com.example.gps_compas.ReferencePoint
+import com.example.i_radar.ReferencePoint
 import com.google.android.gms.location.*
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.gps_compas.FirestoreManager
-import com.example.gpscompass.CalculateDistance.calculateDistanceAndBearing
-import com.example.gpscompass.MainActivity.Companion.noName
-import com.example.gpscompass.MainActivity.Companion.userName
+import com.example.i_radar.FirestoreManager
+import com.example.i_radar.CalculateDistance.calculateDistanceAndBearing
+import com.example.i_radar.MainActivity.Companion.noName
+import com.example.i_radar.MainActivity.Companion.userName
 import com.google.firebase.Timestamp
-import kotlin.math.abs
 
 class LocationService : Service() {
 

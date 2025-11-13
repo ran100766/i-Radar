@@ -1,4 +1,4 @@
-package com.example.gps_compas
+package com.example.i_radar
 
 import android.app.Activity
 import android.graphics.Typeface
@@ -7,8 +7,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import com.example.gpscompass.MainActivity.NavigationResult
-import com.example.gpscompass.R
+import com.example.i_radar.MainActivity.NavigationResult
+import com.example.i_radar.R
 
     private val visibleLines = mutableListOf<String>() // 👈 store currently visible lines
 

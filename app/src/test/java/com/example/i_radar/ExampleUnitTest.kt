@@ -1,4 +1,4 @@
-package com.example.gps_compas
+package com.example.i_radar
 
 import org.junit.Test
 

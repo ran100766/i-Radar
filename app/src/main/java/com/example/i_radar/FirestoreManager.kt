@@ -1,4 +1,4 @@
-package com.example.gps_compas  // <-- use your actual package name
+package com.example.i_radar  // <-- use your actual package name
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore

@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "GPS_COMPAS"
+rootProject.name = "i_Radar"
 include(":app")
  

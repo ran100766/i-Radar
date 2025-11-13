@@ -95,7 +95,7 @@
                 android:src="@drawable/north_arrow" />
 
             <!-- Markers (circles on the circumference) -->
-            <com.example.gps_compas.AzimuthMarkerView
+            <com.example.i_radar.AzimuthMarkerView
                 android:id="@+id/azimuthMarker"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

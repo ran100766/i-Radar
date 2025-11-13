@@ -1,4 +1,4 @@
-package com.example.gpscompass
+package com.example.i_radar
 
 import CompassManager
 import android.Manifest
@@ -20,13 +20,13 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.gps_compas.FirestoreManager
-import com.example.gps_compas.ReferencePoint
-import com.example.gps_compas.askUserName
-import com.example.gps_compas.showCompasArrow
-import com.example.gps_compas.showPointsOnCompas
-import com.example.gps_compas.showPointsOnList
-import com.example.gps_compas.updateVisibleLines
+import com.example.i_radar.FirestoreManager
+import com.example.i_radar.ReferencePoint
+import com.example.i_radar.askUserName
+import com.example.i_radar.showCompasArrow
+import com.example.i_radar.showPointsOnCompas
+import com.example.i_radar.showPointsOnList
+import com.example.i_radar.updateVisibleLines
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {

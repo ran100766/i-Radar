@@ -1,4 +1,4 @@
-package com.example.gps_compas.ui.theme
+package com.example.i_radar.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

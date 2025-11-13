@@ -9,7 +9,26 @@
       "client_info": {
         "mobilesdk_app_id": "1:672132771945:android:3f7d13abc40b73c64cf2f8",
         "android_client_info": {
-          "package_name": "com.example.gpscompass"
+          "package_name": "com.example.i_radar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlaIDGXIBIwtICmSKBfYSKXJ6GghaIVq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672132771945:android:3e3018a383f87a634cf2f8",
+        "android_client_info": {
+          "package_name": "com.example.i_radar"
         }
       },
       "oauth_client": [],

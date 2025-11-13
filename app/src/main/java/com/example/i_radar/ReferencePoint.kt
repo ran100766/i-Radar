@@ -1,6 +1,5 @@
-package com.example.gps_compas  // your actual package name
+package com.example.i_radar  // your actual package name
 
-import com.google.firebase.Timestamp
 import java.util.Date
 
 data class ReferencePoint(
