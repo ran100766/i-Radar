@@ -6,31 +6,59 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
-fun askUserName(activity: Activity, onNameEntered: (String) -> Unit) {
-    val editText = EditText(activity)
-    editText.hint = "Enter your name"
+fun askUserNameAndGroup(
+    activity: Activity,
+    onDataEntered: (name: String, groupId: String) -> Unit
+) {
+    // Step 1: Ask for name
+    val nameEditText = EditText(activity).apply { hint = "Enter your name" }
 
-    val dialog = AlertDialog.Builder(activity)
+    val nameDialog = AlertDialog.Builder(activity)
         .setTitle("Welcome")
         .setMessage("Please enter your name:")
-        .setView(editText)
+        .setView(nameEditText)
         .setCancelable(false)
-        .setPositiveButton("OK", null) // we'll override this later
+        .setPositiveButton("OK", null)
         .create()
 
-    dialog.setOnShowListener {
-        val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+    nameDialog.setOnShowListener {
+        val okButton = nameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
         okButton.setOnClickListener {
-            val name = editText.text.toString().trim()
+            val name = nameEditText.text.toString().trim()
             if (name.isEmpty()) {
                 Toast.makeText(activity, "Name cannot be empty", Toast.LENGTH_SHORT).show()
             } else {
-                dialog.dismiss()
-                onNameEntered(name)
-                Toast.makeText(activity, "Hello, $name!", Toast.LENGTH_SHORT).show()
+                nameDialog.dismiss()
+
+                // Step 2: Ask for Group ID
+                val groupEditText = EditText(activity).apply { hint = "Enter group ID" }
+
+                val groupDialog = AlertDialog.Builder(activity)
+                    .setTitle("Group")
+                    .setMessage("Please enter your group ID:")
+                    .setView(groupEditText)
+                    .setCancelable(false)
+                    .setPositiveButton("OK", null)
+                    .create()
+
+                groupDialog.setOnShowListener {
+                    val groupOkButton = groupDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    groupOkButton.setOnClickListener {
+                        val groupId = groupEditText.text.toString().trim()
+                        if (groupId.isEmpty()) {
+                            Toast.makeText(activity, "Group ID cannot be empty", Toast.LENGTH_SHORT).show()
+                        } else {
+                            groupDialog.dismiss()
+                            onDataEntered(name, groupId)
+                            Toast.makeText(activity, "Hello, $name! Group: $groupId", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                groupDialog.show()
             }
         }
     }
 
-    dialog.show()
+    nameDialog.show()
 }

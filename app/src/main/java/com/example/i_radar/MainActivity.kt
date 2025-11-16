@@ -12,6 +12,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
@@ -22,7 +23,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.i_radar.FirestoreManager
 import com.example.i_radar.ReferencePoint
-import com.example.i_radar.askUserName
 import com.example.i_radar.showCompasArrow
 import com.example.i_radar.showPointsOnCompas
 import com.example.i_radar.showPointsOnList
@@ -33,7 +33,12 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val noName = "No_Name"
+
+        val defaultGroupId = "locations"
         var userName: String = noName
+
+        var groupId: String = defaultGroupId
+
     }
 
     private lateinit var compassManager: CompassManager
@@ -145,9 +150,12 @@ class MainActivity : AppCompatActivity() {
 // Load name in onCreate
         val savedName = prefs.getString("userName", null)
         if (savedName == null || savedName == noName) {
-            askUserName(this) { name ->
+            askUserNameAndGroup(this) { name, gId ->
                 userName = name
+                groupId = gId
                 prefs.edit().putString("userName", name).apply()
+                Log.d("UserData", "Name: $name, Group ID: $groupId")
+                // Store or use the name and groupId as needed
             }
         } else {
             userName = savedName
