@@ -1,7 +1,7 @@
 package com.example.i_radar  // <-- use your actual package name
 
 import android.util.Log
-import com.example.i_radar.MainActivity.Companion.groupId
+import com.example.i_radar.MainActivity.Companion.userGroupId
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 
@@ -11,7 +11,7 @@ class FirestoreManager {
     fun readAllLocations(onResult: (List<ReferencePoint>) -> Unit) {
         val db = FirebaseFirestore.getInstance()
 
-        db.collection(groupId)
+        db.collection(userGroupId)
             .get()
             .addOnSuccessListener { documents ->
                 val referencePoints = mutableListOf<ReferencePoint>()

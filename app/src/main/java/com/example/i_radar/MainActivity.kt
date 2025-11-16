@@ -21,12 +21,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.i_radar.FirestoreManager
-import com.example.i_radar.ReferencePoint
-import com.example.i_radar.showCompasArrow
-import com.example.i_radar.showPointsOnCompas
-import com.example.i_radar.showPointsOnList
-import com.example.i_radar.updateVisibleLines
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -37,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         val defaultGroupId = "locations"
         var userName: String = noName
 
-        var groupId: String = defaultGroupId
+        var userGroupId: String = defaultGroupId
 
     }
 
@@ -150,11 +144,11 @@ class MainActivity : AppCompatActivity() {
 // Load name in onCreate
         val savedName = prefs.getString("userName", null)
         if (savedName == null || savedName == noName) {
-            askUserNameAndGroup(this) { name, gId ->
+            askUserNameAndGroup(this) { name, groupId ->
                 userName = name
-                groupId = gId
+                userGroupId = groupId
                 prefs.edit().putString("userName", name).apply()
-                Log.d("UserData", "Name: $name, Group ID: $groupId")
+                Log.d("UserData", "Name: $name, Group ID: $userGroupId")
                 // Store or use the name and groupId as needed
             }
         } else {
