@@ -46,8 +46,11 @@ fun askUserNameAndGroup(
 // Helper #1: Ask for Group ID (join/create)
 // --------------------------------------
 private fun askForGroupId(activity: Activity, onGroupDone: (String) -> Unit) {
+    val defaultValue = "locations"
+
     val groupInput = EditText(activity).apply {
-        hint = "Enter group ID"
+        setText(defaultValue)   // <-- show default in the field
+        setSelection(defaultValue.length)  // cursor at the end
     }
 
     val dialog = AlertDialog.Builder(activity)
@@ -61,26 +64,37 @@ private fun askForGroupId(activity: Activity, onGroupDone: (String) -> Unit) {
     dialog.setOnShowListener {
         val ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
         ok.setOnClickListener {
-            val groupId = groupInput.text.toString().trim()
+            var groupId = groupInput.text.toString().trim()
 
+            // If user cleared the field → use default value
             if (groupId.isEmpty()) {
-                Toast.makeText(activity, "Group ID cannot be empty", Toast.LENGTH_SHORT).show()
-            } else {
-                dialog.dismiss()
-                onGroupDone(groupId)
+                groupId = defaultValue
             }
+
+            dialog.dismiss()
+            onGroupDone(groupId)
         }
     }
 
     dialog.show()
 }
 
+
 // -----------------------------
 // Helper #2: Ask for Name
 // -----------------------------
+
 private fun askForUserName(activity: Activity, onNameDone: (String) -> Unit) {
+    val defaultName: String? = "Ran"   // <-- default value
+
     val nameInput = EditText(activity).apply {
-        hint = "Enter your name"
+        // Show default in the field
+        if (defaultName != null) {
+            setText(defaultName)
+            setSelection(defaultName.length) // place cursor at the end
+        } else {
+            hint = "Enter your name"
+        }
     }
 
     val dialog = AlertDialog.Builder(activity)
@@ -94,16 +108,25 @@ private fun askForUserName(activity: Activity, onNameDone: (String) -> Unit) {
     dialog.setOnShowListener {
         val ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
         ok.setOnClickListener {
-            val name = nameInput.text.toString().trim()
+            var name = nameInput.text.toString().trim()
 
+            // If field is empty:
             if (name.isEmpty()) {
-                Toast.makeText(activity, "Name cannot be empty", Toast.LENGTH_SHORT).show()
-            } else {
-                dialog.dismiss()
-                onNameDone(name)
+                if (defaultName == null) {
+                    // No default → user must enter something
+                    Toast.makeText(activity, "Name cannot be empty", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                } else {
+                    // Default exists → use it
+                    name = defaultName
+                }
             }
+
+            dialog.dismiss()
+            onNameDone(name)
         }
     }
 
     dialog.show()
 }
+
