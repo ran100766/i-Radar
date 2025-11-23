@@ -81,7 +81,7 @@ class LocationService : Service() {
                 Log.d("DistanceCheck", "Distance: $distance meters")
 
                 if (/*abs(distance) > 2.0 && */userName != noName) {
-                    val myLocation = ReferencePoint(userName, location.latitude, location.longitude, Timestamp.now().toDate(),false,listOf<String>() )
+                    val myLocation = ReferencePoint(userName, location.latitude, location.longitude, Timestamp.now().toDate())
                     FirestoreManager().writeLocation(myLocation) { success ->
                         if (success) Log.d("Main", "Location saved!")
                     }

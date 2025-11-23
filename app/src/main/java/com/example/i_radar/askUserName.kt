@@ -3,9 +3,9 @@ package com.example.i_radar
 
 import android.app.Activity
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.example.i_radar.MainActivity.Companion.defaultGroupId
 
 
 fun askUserNameAndGroup(
@@ -46,11 +46,10 @@ fun askUserNameAndGroup(
 // Helper #1: Ask for Group ID (join/create)
 // --------------------------------------
 private fun askForGroupId(activity: Activity, onGroupDone: (String) -> Unit) {
-    val defaultValue = "locations"
 
     val groupInput = EditText(activity).apply {
-        setText(defaultValue)   // <-- show default in the field
-        setSelection(defaultValue.length)  // cursor at the end
+        setText(defaultGroupId)   // <-- show default in the field
+        setSelection(defaultGroupId.length)  // cursor at the end
     }
 
     val dialog = AlertDialog.Builder(activity)
@@ -68,7 +67,7 @@ private fun askForGroupId(activity: Activity, onGroupDone: (String) -> Unit) {
 
             // If user cleared the field → use default value
             if (groupId.isEmpty()) {
-                groupId = defaultValue
+                groupId = defaultGroupId
             }
 
             dialog.dismiss()

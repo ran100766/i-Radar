@@ -11,33 +11,30 @@ class FirestoreManager {
     fun readAllLocations(onResult: (List<ReferencePoint>) -> Unit) {
         val db = FirebaseFirestore.getInstance()
 
-        db.collection(userGroupId)
+        db.collection("groups")
+            .document(userGroupId)
+            .collection("devices")
             .get()
             .addOnSuccessListener { documents ->
                 val referencePoints = mutableListOf<ReferencePoint>()
 
                 for (doc in documents) {
-                    val name = doc.id
+                    val name = doc.getString("name") ?: doc.id
                     val latitude = doc.getDouble("latitude")
                     val longitude = doc.getDouble("longitude")
 
-// Read lastUpdate timestamp
-                    val lastUpdate = doc.getTimestamp("lastUpdate")?.toDate() // converts to java.util.Date
-
-// Read requestUpdate boolean
-                    val requestUpdate = doc.getBoolean("requestUpdate") ?: false
-
-// Read requestFrom array
-                    val requestFrom = doc.get("requestFrom") as? List<String> ?: emptyList()
+                    // Read lastUpdate timestamp (Firestore Timestamp → java.util.Date)
+                    val lastUpdate = doc.getTimestamp("lastUpdate")?.toDate()
 
                     Log.d(
                         "Firestore",
-                        "Document: $name, Latitude: $latitude, Longitude: $longitude, " +
-                                "LastUpdate: $lastUpdate, RequestUpdate: $requestUpdate, RequestFrom: $requestFrom"
+                        "Device: $name, Lat=$latitude, Lon=$longitude, LastUpdate=$lastUpdate"
                     )
 
                     if (latitude != null && longitude != null) {
-                        referencePoints.add(ReferencePoint(name, latitude, longitude, lastUpdate, requestUpdate, requestFrom))
+                        referencePoints.add(
+                            ReferencePoint(name, latitude, longitude, lastUpdate)
+                        )
                     }
                 }
 
@@ -53,35 +50,24 @@ class FirestoreManager {
         val data = hashMapOf(
             "latitude" to point.lat,
             "longitude" to point.lon,
-            "lastUpdate" to Timestamp.now(),          // current server timestamp
-            "requestUpdate" to false,                 // boolean field
-            "requestFrom" to listOf<String>()        // empty array
+            "lastUpdate" to Timestamp.now(),
+            "name" to point.name
         )
 
-        db.collection("locations")
-            .document(point.name)
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("groups")
+            .document(userGroupId)             // <-- group ID (same for all devices)
+            .collection("devices")
+            .document(point.name)              // <-- device_id
             .set(data)
             .addOnSuccessListener {
-                Log.d("Firestore", "Wrote location: ${point.name}")
+                Log.d("Firestore", "Wrote device ${point.name}")
                 onComplete(true)
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error writing location", e)
                 onComplete(false)
-            }
-    }
-
-    fun deleteLocation(userName: String, onComplete: (Boolean) -> Unit) {
-
-        val db = FirebaseFirestore.getInstance()
-
-        db.collection("locations").document(userName)
-            .delete()
-            .addOnSuccessListener {
-                Log.d("Firestore", "Document successfully deleted!")
-            }
-            .addOnFailureListener { e ->
-                Log.w("Firestore", "Error deleting document", e)
             }
     }
 

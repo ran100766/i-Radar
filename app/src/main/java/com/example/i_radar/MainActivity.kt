@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         val noName = "No_Name"
 
-        val defaultGroupId = "locations"
+        val defaultGroupId = "RANGROUP17"
         var userName: String = noName
 
         var userGroupId: String = defaultGroupId
