@@ -2,6 +2,8 @@ package com.example.i_radar
 
 import CompassManager
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -173,6 +175,10 @@ class MainActivity : AppCompatActivity() {
         scrollView.viewTreeObserver.addOnScrollChangedListener {
             updateVisibleLines(this, scrollView, pointsContainer, fullLocationsList)
         }
+
+        tvGroupKey.setOnClickListener {
+            copyToClipboard(tvGroupKey.text.toString())
+        }
     }
 
 
@@ -282,4 +288,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    // Function to copy text
+    fun copyToClipboard(text: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        clipboard?.setPrimaryClip(ClipData.newPlainText("Group Key", tvGroupKey.text.toString()))
+        Toast.makeText(this, "Group key copied!", Toast.LENGTH_SHORT).show()
+
+    }
+
 }
