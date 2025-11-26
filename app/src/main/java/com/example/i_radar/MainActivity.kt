@@ -22,9 +22,11 @@ import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.coroutines.*
+import java.util.Date
+
+private const val FIVE_MINUTES_MS = 5 * 60 * 1000
 
 class MainActivity : AppCompatActivity() {
-
     companion object {
         val noName = "No_Name"
 
@@ -44,6 +46,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tmMembersOnline: TextView
     private lateinit var tmMembersOffline: TextView
     private val uiUpdateHandler = Handler(Looper.getMainLooper())
+
+    // Counters
+    private var recentCount = 0
+    private var nonRecentCount = 0
+
 
     private val uiUpdateRunnable = object : Runnable {
         override fun run() {
@@ -192,35 +199,44 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+// 5 minutes in milliseconds
+        val now = Date()
+        recentCount = 0
+        nonRecentCount = 0
+
         fullLocationsList = referencePoints.map { point ->
+
+            // Check recency
+            val isRecent = point.lastUpdate?.let {
+                now.time - it.time <= FIVE_MINUTES_MS
+            } ?: false   // if null → treat as not recent
+
+            // Count
+            if (isRecent) recentCount++ else nonRecentCount++
+
+            // Calculate distance & bearing
             val (distance, bearing) = CalculateDistance.calculateDistanceAndBearing(
                 location.latitude,
                 location.longitude,
                 point.lat,
                 point.lon
             )
+
             NavigationResult(point, distance, bearing, distance < 10F)
+
         }.sortedBy { it.distance }
             .onEachIndexed { index, result ->
                 result.index = index
             }
 
-//        showCompasArrow(this, fullLocationsList, location)
-//        showPointsOnCompas(this,fullLocationsList, location)
         showPointsOnList(this, fullLocationsList)
-
-
     }
 
     private fun printHeader() {
         tvGroupKey.text = userGroupId
         tvGroupDescription.text = userName + "@" + userGroupId
-        tmMembersOnline.text = "Online: 177"
-        tmMembersOffline.text = "Offline: 771"
-
-//        tvSpeed.text = "Speed: %.1f knots".format(speedKnots)
-//        tvLatitude.text = "Lat: %.5f".format(location.latitude)
-//        tvLongitude.text = "Lng: %.5f".format(location.longitude)
+        tmMembersOnline.text = "Online: " + recentCount
+        tmMembersOffline.text = "Offline: " + nonRecentCount
     }
 
 
