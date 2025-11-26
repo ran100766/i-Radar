@@ -18,7 +18,6 @@ fun showCompasArrow(
     activity: Activity,
     fullLocationsList: List<NavigationResult>,
     azimuth: Float,
-    tvDirection: TextView
 ) {
     val arrowStatic = false
 
@@ -29,7 +28,6 @@ fun showCompasArrow(
     val normalizedAzimuth = (displayAzimuth + 360) % 360
 
     // Update direction text
-    tvDirection.text = "Direction: %.0f°".format(normalizedAzimuth)
 
     if (arrowStatic) {
         val arrow = activity.findViewById<ImageView>(R.id.directionArrow)

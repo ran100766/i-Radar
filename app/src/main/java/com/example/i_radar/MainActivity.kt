@@ -39,10 +39,10 @@ class MainActivity : AppCompatActivity() {
 
     public var fullLocationsList: List<NavigationResult> = emptyList()
 
-    private lateinit var tvSpeed: TextView
-    public lateinit var tvDirection: TextView
-    private lateinit var tvLatitude: TextView
-    private lateinit var tvLongitude: TextView
+    private lateinit var tvGroupKey: TextView
+    public lateinit var tvGroupDescription: TextView
+    private lateinit var tmMembersOnline: TextView
+    private lateinit var tmMembersOffline: TextView
     private val uiUpdateHandler = Handler(Looper.getMainLooper())
 
     private val uiUpdateRunnable = object : Runnable {
@@ -125,15 +125,15 @@ class MainActivity : AppCompatActivity() {
         compassManager = CompassManager(this) { azimuth ->
             smoothedAzimuth = smoothAzimuth(smoothedAzimuth, azimuth)
 
-            showCompasArrow(this, fullLocationsList, smoothedAzimuth, tvDirection)
+            showCompasArrow(this, fullLocationsList, smoothedAzimuth)
             showPointsOnCompas(this, fullLocationsList, smoothedAzimuth)
         }
 
 
-        tvSpeed = findViewById(R.id.tvSpeed)
-        tvDirection = findViewById(R.id.tvDirection)
-        tvLatitude = findViewById(R.id.tvLatitude)
-        tvLongitude = findViewById(R.id.tvLongitude)
+        tvGroupKey = findViewById(R.id.tvGroupKey)
+        tvGroupDescription = findViewById(R.id.tvGroupDescription)
+        tmMembersOnline = findViewById(R.id.tvMembersOnline)
+        tmMembersOffline = findViewById(R.id.tvMembersOffline)
 
         FirebaseApp.initializeApp(this)
 
@@ -174,12 +174,10 @@ class MainActivity : AppCompatActivity() {
         val speedKmh = speedMps * 3.6
         val speedKnots = speedMps * 1.94384
 
-        tvSpeed.text = "Speed: %.1f knots".format(speedKnots)
-//        tvDirection.text = "Direction: %.0f°".format(location.bearing)
-//        tvCoords.text = "Lat: %.5f, Lng: %.5f".format(location.latitude, location.longitude)
-
-        tvLatitude.text = "Lat: %.5f".format(location.latitude)
-        tvLongitude.text = "Lng: %.5f".format(location.longitude)
+        printHeader()
+//        tvSpeed.text = "Speed: %.1f knots".format(speedKnots)
+//        tvLatitude.text = "Lat: %.5f".format(location.latitude)
+//        tvLongitude.text = "Lng: %.5f".format(location.longitude)
 
 
         val firestoreManager = FirestoreManager()
@@ -213,6 +211,18 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    private fun printHeader() {
+        tvGroupKey.text = userGroupId
+        tvGroupDescription.text = userName + "@" + userGroupId
+        tmMembersOnline.text = "Online: 177"
+        tmMembersOffline.text = "Offline: 771"
+
+//        tvSpeed.text = "Speed: %.1f knots".format(speedKnots)
+//        tvLatitude.text = "Lat: %.5f".format(location.latitude)
+//        tvLongitude.text = "Lng: %.5f".format(location.longitude)
+    }
+
 
     override fun onStart() {
         super.onStart()

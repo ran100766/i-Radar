@@ -20,22 +20,22 @@
 
         <!-- Speed -->
         <TextView
-            android:id="@+id/tvSpeed"
+            android:id="@+id/tvGroupKey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Speed: 0 knots"
+            android:text="Group Key: RANGROUP17"
             android:textColor="@android:color/black"
             android:textSize="28sp"
             android:textStyle="bold" />
 
         <!-- Direction -->
         <TextView
-            android:id="@+id/tvDirection"
+            android:id="@+id/tvGroupDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Direction: 0°"
+            android:text="Group Description: blabla"
             android:textColor="@android:color/black"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -49,20 +49,20 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvLatitude"
+                android:id="@+id/tvMembersOffline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="Lat: 0.00000"
+                android:text="Offline: 0"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvLongitude"
+                android:id="@+id/tvMembersOnline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lng: 0.00000"
+                android:text="Online: 1"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold" />
