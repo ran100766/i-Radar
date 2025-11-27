@@ -50,8 +50,8 @@ class MainActivity : AppCompatActivity() {
     private val uiUpdateHandler = Handler(Looper.getMainLooper())
 
     // Counters
-    private var recentCount = 0
-    private var nonRecentCount = 0
+    private var upToDateCount = 0
+    private var outDatedCount = 0
 
 
     private val uiUpdateRunnable = object : Runnable {
@@ -72,7 +72,8 @@ class MainActivity : AppCompatActivity() {
         var distance: Float,
         var bearing: Float,
         var atPoint: Boolean = false,
-        var index: Int = 0,
+        var isUpToDate: Boolean = false,
+        var index: Int = 0
     )
 
     private var referencePoints: MutableList<ReferencePoint> = mutableListOf(
@@ -207,18 +208,18 @@ class MainActivity : AppCompatActivity() {
 
 // 5 minutes in milliseconds
         val now = Date()
-        recentCount = 0
-        nonRecentCount = 0
+        upToDateCount = 0
+        outDatedCount = 0
 
         fullLocationsList = referencePoints.map { point ->
 
             // Check recency
-            val isRecent = point.lastUpdate?.let {
+            val isUpToDate = point.lastUpdate?.let {
                 now.time - it.time <= FIVE_MINUTES_MS
             } ?: false   // if null → treat as not recent
 
             // Count
-            if (isRecent) recentCount++ else nonRecentCount++
+            if (isUpToDate) upToDateCount++ else outDatedCount++
 
             // Calculate distance & bearing
             val (distance, bearing) = CalculateDistance.calculateDistanceAndBearing(
@@ -228,7 +229,7 @@ class MainActivity : AppCompatActivity() {
                 point.lon
             )
 
-            NavigationResult(point, distance, bearing, distance < 10F)
+            NavigationResult(point, distance, bearing, distance < 10F, isUpToDate)
 
         }.sortedBy { it.distance }
             .onEachIndexed { index, result ->
@@ -241,8 +242,8 @@ class MainActivity : AppCompatActivity() {
     private fun printHeader() {
         tvGroupKey.text = userGroupId
         tvGroupDescription.text = userName
-        tmMembersOnline.text = "Online: " + recentCount
-        tmMembersOffline.text = "Offline: " + nonRecentCount
+        tmMembersOnline.text = "Online: " + upToDateCount
+        tmMembersOffline.text = "Offline: " + outDatedCount
     }
 
 
