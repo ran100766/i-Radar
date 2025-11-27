@@ -56,18 +56,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:text="Offline: 0"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:padding="6dp"
+                android:background="#AAAAAA" />
 
             <TextView
                 android:id="@+id/tvMembersOnline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Online: 1"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:padding="6dp"
+                android:background="#4CAF50"/>
         </LinearLayout>
 
         <!-- Compass with arrow -->

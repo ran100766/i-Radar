@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun printHeader() {
         tvGroupKey.text = userGroupId
-        tvGroupDescription.text = userName + "@" + userGroupId
+        tvGroupDescription.text = userName
         tmMembersOnline.text = "Online: " + recentCount
         tmMembersOffline.text = "Offline: " + nonRecentCount
     }
