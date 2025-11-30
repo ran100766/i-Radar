@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     public var fullLocationsList: List<NavigationResult> = emptyList()
 
     private lateinit var tvGroupKey: TextView
-    public lateinit var tvGroupDescription: TextView
+    public lateinit var tvUserName: TextView
     private lateinit var tmMembersOnline: TextView
     private lateinit var tmMembersOffline: TextView
     private val uiUpdateHandler = Handler(Looper.getMainLooper())
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
 
         tvGroupKey = findViewById(R.id.tvGroupKey)
-        tvGroupDescription = findViewById(R.id.tvGroupDescription)
+        tvUserName = findViewById(R.id.tvUserName)
         tmMembersOnline = findViewById(R.id.tvMembersOnline)
         tmMembersOffline = findViewById(R.id.tvMembersOffline)
 
@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun printHeader() {
         tvGroupKey.text = userGroupId
-        tvGroupDescription.text = userName
+        tvUserName.text = userName
         tmMembersOnline.text = "Online: " + upToDateCount
         tmMembersOffline.text = "Offline: " + outDatedCount
     }
