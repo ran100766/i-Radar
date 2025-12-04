@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         tvGroupKey.setOnClickListener {
-            copyToClipboard(tvGroupKey.text.toString())
+            copyToClipboard(userGroupId)
         }
     }
 
@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun printHeader() {
-        tvGroupKey.text = userGroupId
+        tvGroupKey.text = "Group: $userGroupId" // Changed from userGroupId
         tvUserName.text = userName
 //        tmMembersOnline.text = "Online: " + upToDateCount + '↑'
 //        tmMembersOffline.text = "Offline: " + outDatedCount + '↓'
@@ -296,9 +296,9 @@ class MainActivity : AppCompatActivity() {
     // Function to copy text
     fun copyToClipboard(text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-        clipboard?.setPrimaryClip(ClipData.newPlainText("Group Key", tvGroupKey.text.toString()))
+        // Use the 'text' parameter that was passed in
+        clipboard?.setPrimaryClip(ClipData.newPlainText("Group Key", text))
         Toast.makeText(this, "Group key copied!", Toast.LENGTH_SHORT).show()
-
     }
 
 }
