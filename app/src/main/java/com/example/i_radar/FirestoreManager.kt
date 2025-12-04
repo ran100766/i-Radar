@@ -33,7 +33,7 @@ class FirestoreManager {
 
                     if (latitude != null && longitude != null) {
                         referencePoints.add(
-                            ReferencePoint(name, latitude, longitude, lastUpdate)
+                            ReferencePoint(name, latitude, longitude,  lastUpdate)
                         )
                     }
                 }

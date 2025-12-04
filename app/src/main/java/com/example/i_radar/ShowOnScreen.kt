@@ -105,10 +105,16 @@ fun showPointsOnCompas(
             tv.textSize = 20f
             tv.setTypeface(null, Typeface.BOLD) // 👈 makes the text bold
 
+            val arrowChar = if (point.isUpToDate) '▲' else '▼'
 
-            // Fixed-width columns
-            val text =
-                String.format("%-14s %-7d", point.point.name.take(14), point.distance.toInt())
+// Combine the arrow into the formatted string
+            val text = String.format(
+                "%-14s %-6d %c",
+                point.point.name.take(14),
+                point.distance.toInt(),
+                arrowChar
+            )
+
             tv.text = text
             tv.typeface = Typeface.MONOSPACE // ensures columns align
 

@@ -206,7 +206,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-// 5 minutes in milliseconds
         val now = Date()
         upToDateCount = 0
         outDatedCount = 0
@@ -242,8 +241,12 @@ class MainActivity : AppCompatActivity() {
     private fun printHeader() {
         tvGroupKey.text = userGroupId
         tvUserName.text = userName
-        tmMembersOnline.text = "Online: " + upToDateCount
-        tmMembersOffline.text = "Offline: " + outDatedCount
+//        tmMembersOnline.text = "Online: " + upToDateCount + '↑'
+//        tmMembersOffline.text = "Offline: " + outDatedCount + '↓'
+//        tmMembersOnline.text = "Online: $upToDateCount ⬆"
+//        tmMembersOffline.text = "Offline: $outDatedCount ⬇"
+         tmMembersOnline.text = "Online: $upToDateCount ▲"
+         tmMembersOffline.text = "Offline: $outDatedCount ▼"
     }
 
 
