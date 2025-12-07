@@ -29,17 +29,23 @@ fun askUserNameAndGroup(
                 })
             } else {
                 // CREATE NEW GROUP
-                askForGroupId(activity, onGroupDone = { groupId ->
-                    askForUserName(activity) { name ->
-                        onDataEntered(name, groupId)
-                    }
-                })
+                val newGroupId = generateRandomGroupId()
+                askForUserName(activity) { name ->
+                    onDataEntered(name, newGroupId)
+                }
             }
         }
         .setCancelable(false)
         .create()
 
     groupChoiceDialog.show()
+}
+
+private fun generateRandomGroupId(length: Int = 16): String {
+    val allowedChars = ('A'..'Z')
+    return (1..length)
+        .map { allowedChars.random() }
+        .joinToString("")
 }
 
 // --------------------------------------
@@ -128,4 +134,3 @@ private fun askForUserName(activity: Activity, onNameDone: (String) -> Unit) {
 
     dialog.show()
 }
-
