@@ -1,6 +1,7 @@
 package com.example.i_radar
 
 import android.app.Activity
+import android.graphics.Color
 import android.graphics.Typeface
 import android.util.Log
 import android.widget.ImageView
@@ -107,6 +108,12 @@ fun showPointsOnCompas(
 
             val arrowChar = if (point.isUpToDate) '▲' else '▼'
 
+            if (arrowChar == '▲') {
+                tv.setTextColor(Color.GREEN)
+            } else {
+                tv.setTextColor(Color.BLACK)
+            }
+
 // Combine the arrow into the formatted string
             val text = String.format(
                 "%-14s %-6d %c",
@@ -149,5 +156,4 @@ fun showPointsOnCompas(
         Log.d("VisibleLines", "Currently visible: $visibleLines")
 
     }
-
 
