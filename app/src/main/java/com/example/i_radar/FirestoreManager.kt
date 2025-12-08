@@ -2,6 +2,7 @@ package com.example.i_radar  // <-- use your actual package name
 
 import android.util.Log
 import com.example.i_radar.MainActivity.Companion.userGroupId
+import com.example.i_radar.MainActivity.Companion.groupName
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 
@@ -9,39 +10,48 @@ class FirestoreManager {
     private val db = FirebaseFirestore.getInstance()
 
     fun readAllLocations(onResult: (List<ReferencePoint>) -> Unit) {
-        val db = FirebaseFirestore.getInstance()
+        val groupDocRef = db.collection("groups").document(userGroupId)
 
-        db.collection("groups")
-            .document(userGroupId)
-            .collection("devices")
-            .get()
-            .addOnSuccessListener { documents ->
-                val referencePoints = mutableListOf<ReferencePoint>()
+        // 1. Get the main group document to read its fields (like 'group_name')
+        groupDocRef.get()
+            .addOnSuccessListener { groupDocument ->
+                groupName = groupDocument.getString("groupName") ?: "No Name"
+                Log.d("Firestore", "Successfully read group name: $groupName")
 
-                for (doc in documents) {
-                    val name = doc.getString("name") ?: doc.id
-                    val latitude = doc.getDouble("latitude")
-                    val longitude = doc.getDouble("longitude")
+                // 2. Then, get the devices in the subcollection
+                groupDocRef.collection("devices")
+                    .get()
+                    .addOnSuccessListener { devicesSnapshot ->
+                        val referencePoints = mutableListOf<ReferencePoint>()
+                        for (doc in devicesSnapshot) {
+                            val name = doc.getString("name") ?: doc.id
+                            val latitude = doc.getDouble("latitude")
+                            val longitude = doc.getDouble("longitude")
+                            val lastUpdate = doc.getTimestamp("lastUpdate")?.toDate()
 
-                    // Read lastUpdate timestamp (Firestore Timestamp → java.util.Date)
-                    val lastUpdate = doc.getTimestamp("lastUpdate")?.toDate()
+                            Log.d(
+                                "Firestore",
+                                "Device: $name, Lat=$latitude, Lon=$longitude, LastUpdate=$lastUpdate"
+                            )
 
-                    Log.d(
-                        "Firestore",
-                        "Device: $name, Lat=$latitude, Lon=$longitude, LastUpdate=$lastUpdate"
-                    )
-
-                    if (latitude != null && longitude != null) {
-                        referencePoints.add(
-                            ReferencePoint(name, latitude, longitude,  lastUpdate)
-                        )
+                            if (latitude != null && longitude != null) {
+                                referencePoints.add(
+                                    ReferencePoint(name, latitude, longitude,  lastUpdate)
+                                )
+                            }
+                        }
+                        // Success: return both group name and the list of points
+                        onResult(referencePoints)
                     }
-                }
-
-                onResult(referencePoints)
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "Error reading 'devices' subcollection", e)
+                        // Failure: return group name but an empty list for points
+                        onResult(emptyList())
+                    }
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error reading locations", e)
+                Log.e("Firestore", "Error reading group document", e)
+                // If we can't read the group doc, we can't get anything.
                 onResult(emptyList())
             }
     }

@@ -90,7 +90,7 @@ private fun askForGroupId(activity: Activity, onGroupDone: (String) -> Unit) {
 // -----------------------------
 
 private fun askForUserName(activity: Activity, onNameDone: (String) -> Unit) {
-    val defaultName: String? = "Ran"   // <-- default value
+    val defaultName: String? = "No Name"   // <-- default value
 
     val nameInput = EditText(activity).apply {
         // Show default in the field

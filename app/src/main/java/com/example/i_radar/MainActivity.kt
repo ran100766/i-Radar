@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         var userGroupId: String = defaultGroupId
 
+        var groupName: String = "No_Name"
+
     }
 
     private lateinit var compassManager: CompassManager
@@ -239,7 +241,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun printHeader() {
-        tvGroupKey.text = "Group: $userGroupId" // Changed from userGroupId
+        tvGroupKey.text = "Group: $groupName" // Changed from userGroupId
         tvUserName.text = userName
 //        tmMembersOnline.text = "Online: " + upToDateCount + '↑'
 //        tmMembersOffline.text = "Offline: " + outDatedCount + '↓'
