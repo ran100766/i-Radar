@@ -23,7 +23,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import kotlinx.coroutines.*
 import java.util.Date
 
 private const val FIVE_MINUTES_MS = 5 * 60 * 1000
@@ -78,11 +77,7 @@ class MainActivity : AppCompatActivity() {
         var index: Int = 0
     )
 
-    private var referencePoints: MutableList<ReferencePoint> = mutableListOf(
-//        ReferencePoint("Jerusalem", 31.7795, 35.2339),
-//        ReferencePoint("Home", 32.17062, 34.83878),
-//        ReferencePoint("Marina", 32.16580, 34.79267)
-    )
+    private var referencePoints: MutableList<ReferencePoint> = mutableListOf()
 
     private val locationPermissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -129,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main) // must match activity_main.xml
+        setContentView(R.layout.activity_main)
 
         val arrowImage = findViewById<ImageView>(R.id.compassCircle)
         arrowImage.setImageResource(R.drawable.circle)
@@ -149,23 +144,9 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
-// Save name
-        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        prefs.edit().putString("userName", userName).apply()
-
-// Load name in onCreate
-        val savedName = prefs.getString("userName", null)
-        if (savedName == null || savedName == noName) {
-            askUserNameAndGroup(this) { name, groupId ->
-                userName = name
-                userGroupId = groupId
-                prefs.edit().putString("userName", name).apply()
-                Log.d("UserData", "Name: $name, Group ID: $userGroupId")
-                // Store or use the name and groupId as needed
-            }
-        } else {
-            userName = savedName
-        }
+        // Use the new manager to handle user data loading and setup.
+        val userDataManager = UserDataManager(this)
+        userDataManager.initializeUserData(this)
 
         locationPermissionRequest.launch(locationPermissions)
         requestIgnoreBatteryOptimizations()
@@ -174,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         val scrollView = findViewById<ScrollView>(R.id.scrollView)
         val pointsContainer = findViewById<LinearLayout>(R.id.pointsContainer)
 
-// Add a scroll listener
+        // Add a scroll listener
         scrollView.viewTreeObserver.addOnScrollChangedListener {
             updateVisibleLines(this, scrollView, pointsContainer, fullLocationsList)
         }
@@ -191,10 +172,6 @@ class MainActivity : AppCompatActivity() {
         val speedKnots = speedMps * 1.94384
 
         printHeader()
-//        tvSpeed.text = "Speed: %.1f knots".format(speedKnots)
-//        tvLatitude.text = "Lat: %.5f".format(location.latitude)
-//        tvLongitude.text = "Lng: %.5f".format(location.longitude)
-
 
         val firestoreManager = FirestoreManager()
 
@@ -241,12 +218,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun printHeader() {
-        tvGroupKey.text = "Group: $groupName" // Changed from userGroupId
+        tvGroupKey.text = "Group: $groupName"
         tvUserName.text = userName
-//        tmMembersOnline.text = "Online: " + upToDateCount + '↑'
-//        tmMembersOffline.text = "Offline: " + outDatedCount + '↓'
-//        tmMembersOnline.text = "Online: $upToDateCount ⬆"
-//        tmMembersOffline.text = "Offline: $outDatedCount ⬇"
          tmMembersOnline.text = "Online: $upToDateCount ▲"
          tmMembersOffline.text = "Offline: $outDatedCount ▼"
     }
@@ -261,25 +234,15 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         uiUpdateHandler.removeCallbacks(uiUpdateRunnable) // stop updates when activity stops
     }
-//    private var updateJob: Job? = null
 
     override fun onResume() {
         super.onResume()
         compassManager.start()
-
-//        updateJob = lifecycleScope.launch {
-//            while (isActive) {
-//                showPointsOnCompas(this@MainActivity, fullLocationsList)
-//                delay(500)
-//            }
-//        }
     }
 
     override fun onPause() {
         super.onPause()
         compassManager.stop()
-//        updateJob?.cancel()
-
     }
 
     private fun requestIgnoreBatteryOptimizations() {
@@ -298,7 +261,6 @@ class MainActivity : AppCompatActivity() {
     // Function to copy text
     fun copyToClipboard(text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-        // Use the 'text' parameter that was passed in
         clipboard?.setPrimaryClip(ClipData.newPlainText("Group Key", text))
         Toast.makeText(this, "Group key copied!", Toast.LENGTH_SHORT).show()
     }

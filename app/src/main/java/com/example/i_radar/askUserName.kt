@@ -10,7 +10,7 @@ import com.example.i_radar.MainActivity.Companion.defaultGroupId
 
 fun askUserNameAndGroup(
     activity: Activity,
-    onDataEntered: (name: String, groupId: String) -> Unit
+    onDataEntered: ( String, String, String) -> Unit
 ) {
     // ---------------------------
     // STEP 1: GROUP SELECT SCREEN
@@ -24,14 +24,14 @@ fun askUserNameAndGroup(
                 // JOIN EXISTING GROUP
                 askForGroupId(activity, onGroupDone = { groupId ->
                     askForUserName(activity) { name ->
-                        onDataEntered(name, groupId)
+                        onDataEntered(name, groupId, "temp")
                     }
                 })
             } else {
                 // CREATE NEW GROUP
                 val newGroupId = generateRandomGroupId()
                 askForUserName(activity) { name ->
-                    onDataEntered(name, newGroupId)
+                    onDataEntered(name, newGroupId, "temp")
                 }
             }
         }
