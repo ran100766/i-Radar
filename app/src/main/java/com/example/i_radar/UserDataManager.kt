@@ -5,48 +5,63 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 /**
- * Handles loading, saving, and setting up user data like name and group ID
- * using SharedPreferences.
+ * Handles the sequential loading and setup of user data (name and group).
  */
-class UserDataManager(context: Context) {
+class UserDataManager(private val activity: AppCompatActivity) {
 
-    private val prefs = context.getSharedPreferences("i-radar-prefs", Context.MODE_PRIVATE)
+    private val prefs = activity.getSharedPreferences("i-radar-prefs", Context.MODE_PRIVATE)
+
+    fun initializeUserData() {
+        // Start the process by ensuring we have a username.
+        ensureUserNameExists {
+            // Once the username is confirmed, ensure a group ID exists.
+            ensureGroupIdExists()
+        }
+    }
 
     /**
-     * Checks for saved user data. If not found, prompts the user to enter it.
-     * Otherwise, loads the saved data into MainActivity.
+     * STEP 1: Check for a saved user name. If not found, ask the user for it.
      */
-    fun initializeUserData(activity: AppCompatActivity) {
+    private fun ensureUserNameExists(onComplete: () -> Unit) {
         val savedName = prefs.getString("userName", null)
-        val savedGroupId = prefs.getString("userGroupId", null)
-        val savedGroupName = prefs.getString("groupName", null)
 
-        // If name or group ID is missing, we need to ask the user for initial setup.
-        if (savedName == null || savedName == MainActivity.noName || savedGroupId == null) {
-
-            // Prompt the user to enter their details.
-            askUserNameAndGroup(activity) { name, groupId, groupName ->
-                // Update the running state in MainActivity's companion object
+        if (savedName == null || savedName == MainActivity.noName)
+        {
+            // No valid name saved, so we must ask for it.
+            askForUserName(activity, suggestedName = null) { name ->
                 MainActivity.userName = name
-                MainActivity.userGroupId = groupId
-                // Note: groupName is fetched from Firestore later, not set here.
-
-                // Save the new details for the next session.
-                prefs.edit().apply {
-                    putString("userName", name)
-                    putString("userGroupId", groupId)
-                    apply()
-                }
-                Log.d("UserData", "Initial setup complete. Name: $name, Group ID: $groupId")
+                prefs.edit().putString("userName", name).apply()
+                Log.d("UserData", "User name set to: $name")
+                onComplete() // Proceed to the next step (checking for group ID)
             }
-
         } else {
-            // If data exists, load it into MainActivity's companion object.
+            // A valid name is already saved. Load it and proceed.
             MainActivity.userName = savedName
-            MainActivity.userGroupId = savedGroupId
-            MainActivity.groupName = savedGroupName ?: "No_Name" // Use default if null
+            Log.d("UserData", "Loaded user name: $savedName")
+            onComplete() // Proceed to the next step
+        }
+    }
 
-            Log.d("UserData", "Loaded from Prefs → Name: ${MainActivity.userName}, Group Name: ${MainActivity.groupName}, Group ID: ${MainActivity.userGroupId}")
+    /**
+     * STEP 2: Check for a saved group ID. If not found, ask the user to join/create.
+     */
+    private fun ensureGroupIdExists() {
+        val savedGroupId = prefs.getString("userGroupId", null)
+
+        MainActivity.groupName = prefs.getString("groupName", MainActivity.noName) ?: MainActivity.noName
+
+        if (savedGroupId == null || MainActivity.groupName == MainActivity.noName) {
+            // No group ID is saved, so ask the user to choose.
+            askForGroupChoice(activity) { groupId ->
+                MainActivity.userGroupId = groupId
+                prefs.edit().putString("userGroupId", groupId).apply()
+                Log.d("UserData", "User group set to: $groupId")
+            }
+        } else {
+            // Group ID is already saved. Load it.
+            MainActivity.userGroupId = savedGroupId
+            // Also load the associated group name, if it exists.
+            Log.d("UserData", "Loaded group ID: $savedGroupId, Group Name: ${MainActivity.groupName}")
         }
     }
 }

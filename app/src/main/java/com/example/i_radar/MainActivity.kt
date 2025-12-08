@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         var userGroupId: String = defaultGroupId
 
-        var groupName: String = "No_Name"
+        var groupName: String = noName
 
     }
 
@@ -145,8 +145,7 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         // Use the new manager to handle user data loading and setup.
-        val userDataManager = UserDataManager(this)
-        userDataManager.initializeUserData(this)
+        UserDataManager(this).initializeUserData()
 
         locationPermissionRequest.launch(locationPermissions)
         requestIgnoreBatteryOptimizations()
@@ -175,13 +174,10 @@ class MainActivity : AppCompatActivity() {
 
         val firestoreManager = FirestoreManager()
 
-        firestoreManager.readAllLocations { points ->
-            // This block runs after Firestore data is loaded
+        // Corrected callback to handle a single list of points
+        firestoreManager.readAllLocations { points: List<ReferencePoint> ->
             if (points.isNotEmpty()) {
-                // Assign to a variable for later use
                 referencePoints = points.toMutableList()
-
-                // Use referencePoints here, e.g., update UI or show on map
             }
         }
 
