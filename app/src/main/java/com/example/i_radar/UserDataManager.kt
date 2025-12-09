@@ -14,7 +14,7 @@ class UserDataManager(private val activity: AppCompatActivity) {
     fun initializeUserData() {
         // Start the process by always asking for the username.
         ensureUserNameExists {
-            // Once the username is confirmed, ensure a group ID exists.
+            // Once the username is confirmed, always ask for the group choice.
             ensureGroupIdExists()
         }
     }
@@ -30,28 +30,29 @@ class UserDataManager(private val activity: AppCompatActivity) {
             MainActivity.userName = name
             prefs.edit().putString("userName", name).apply()
             Log.d("UserData", "User name confirmed/updated to: $name")
-            onComplete() // Proceed to the next step (checking for group ID)
+            onComplete() // Proceed to the next step
         }
     }
 
     /**
-     * STEP 2: Check for a saved group ID. If not found, ask the user to join/create.
+     * STEP 2: Always ask the user to join or create a group.
      */
     private fun ensureGroupIdExists() {
-        val savedGroupId = prefs.getString("userGroupId", null)
+        // Always ask the user to choose a group.
+        // The dialog will intelligently suggest saved values from SharedPreferences.
+        askForGroupChoice(activity) { groupId, groupName ->
+            MainActivity.userGroupId = groupId
+            prefs.edit().putString("userGroupId", groupId).apply()
 
-        if (savedGroupId == null) {
-            // No group ID is saved, so ask the user to choose one.
-            askForGroupChoice(activity) { groupId ->
-                MainActivity.userGroupId = groupId
-                prefs.edit().putString("userGroupId", groupId).apply()
-                Log.d("UserData", "User group set to: $groupId")
+            // If a new group was created, its name is passed back and saved.
+            if (groupName != null) {
+                MainActivity.groupName = groupName
+                prefs.edit().putString("groupName", groupName).apply()
+                Log.d("UserData", "New group created. Group ID: $groupId, Name: $groupName")
+            } else {
+                // When joining, the groupName is null. We will load the real one from Firestore later.
+                Log.d("UserData", "Joined/Confirmed existing group. Group ID: $groupId")
             }
-        } else {
-            // Group ID is already saved. Load it and the last known group name.
-            MainActivity.userGroupId = savedGroupId
-            MainActivity.groupName = prefs.getString("groupName", "No_Name") ?: "No_Name"
-            Log.d("UserData", "Loaded group data. Group ID: $savedGroupId, Group Name: ${MainActivity.groupName}")
         }
     }
 }

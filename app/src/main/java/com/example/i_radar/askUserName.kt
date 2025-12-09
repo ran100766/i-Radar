@@ -1,11 +1,13 @@
 package com.example.i_radar
 
 import android.app.Activity
+import android.content.Context
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.i_radar.MainActivity.Companion.defaultGroupId
-
+import com.example.i_radar.MainActivity.Companion.noName
 
 /**
  * PUBLIC: Asks the user for their name.
@@ -31,11 +33,10 @@ fun askForUserName(
         .create()
 
     dialog.setOnShowListener {
-        val ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        ok.setOnClickListener {
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             var name = nameInput.text.toString().trim()
             if (name.isEmpty()) {
-                name = MainActivity.noName // Use default if empty
+                name = noName // Use default if empty
             }
             dialog.dismiss()
             onNameDone(name)
@@ -45,25 +46,40 @@ fun askForUserName(
 }
 
 /**
- * PUBLIC: Asks the user whether they want to join or create a group.
+ * PUBLIC: Asks the user to choose how to set up their group.
  */
 fun askForGroupChoice(
     activity: Activity,
-    onGroupEntered: (String) -> Unit
+    onGroupInfoEntered: (groupId: String, groupName: String?) -> Unit
 ) {
-    val options = arrayOf("Join existing group", "Create new group")
+    val prefs = activity.getSharedPreferences("i-radar-prefs", Context.MODE_PRIVATE)
+    val savedGroupId = prefs.getString("userGroupId", null)
+    val savedGroupName = prefs.getString("groupName", null)
+
+    val options = mutableListOf<String>()
+
+    // Only show the 'Join last group' option if a valid group is saved.
+    if (savedGroupId != null && savedGroupId != defaultGroupId && savedGroupName != null && savedGroupName != noName) {
+        options.add("Join last group ($savedGroupName)")
+    }
+    options.add("Join other existing group")
+    options.add("Create new group")
 
     AlertDialog.Builder(activity)
         .setTitle("Group Setup")
-        .setItems(options) { _, which ->
-            if (which == 0) { // Join
-                askForGroupIdToJoin(activity) { groupId ->
-                    onGroupEntered(groupId)
+        .setItems(options.toTypedArray()) { _, which ->
+            val selectedOption = options[which]
+            when {
+                selectedOption.startsWith("Join last group") -> {
+                    // This is only shown if savedGroupId and savedGroupName are valid.
+                    onGroupInfoEntered(savedGroupId!!, savedGroupName)
                 }
-            } else { // Create
-                val newGroupId = generateRandomGroupId()
-                Toast.makeText(activity, "New Group Created!", Toast.LENGTH_LONG).show()
-                onGroupEntered(newGroupId)
+                selectedOption == "Join other existing group" -> {
+                    askToJoinOtherGroup(activity, onGroupInfoEntered)
+                }
+                selectedOption == "Create new group" -> {
+                    askToCreateNewGroup(activity, onGroupInfoEntered)
+                }
             }
         }
         .setCancelable(false)
@@ -71,16 +87,52 @@ fun askForGroupChoice(
 }
 
 /**
- * HELPER: Shows a dialog to enter a group ID for joining.
+ * PRIVATE HELPER: Handles the 'Create New Group' flow.
  */
-private fun askForGroupIdToJoin(activity: Activity, onGroupDone: (String) -> Unit) {
-    val groupInput = EditText(activity).apply {
-        setText(defaultGroupId)
-        setSelection(defaultGroupId.length)
+private fun askToCreateNewGroup(
+    activity: Activity,
+    onComplete: (groupId: String, groupName: String) -> Unit
+) {
+    val newGroupId = generateRandomGroupId()
+    val nameInput = EditText(activity).apply {
+        hint = "My Awesome Group"
     }
 
     val dialog = AlertDialog.Builder(activity)
-        .setTitle("Join Group")
+        .setTitle("Create New Group")
+        .setMessage("Your new Group ID is: $newGroupId\n\nPlease give your group a name:")
+        .setView(nameInput)
+        .setCancelable(false)
+        .setPositiveButton("OK", null)
+        .create()
+
+    dialog.setOnShowListener {
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val groupName = nameInput.text.toString().trim()
+            if (groupName.isEmpty()) {
+                Toast.makeText(activity, "Group name cannot be empty", Toast.LENGTH_SHORT).show()
+            } else {
+                dialog.dismiss()
+                onComplete(newGroupId, groupName)
+            }
+        }
+    }
+    dialog.show()
+}
+
+/**
+ * PRIVATE HELPER: Asks for a new group ID to join, with no suggestions.
+ */
+private fun askToJoinOtherGroup(
+    activity: Activity,
+    onComplete: (groupId: String, groupName: String?) -> Unit
+) {
+    val groupInput = EditText(activity).apply {
+        hint = "Enter or paste Group ID"
+    }
+
+    val dialog = AlertDialog.Builder(activity)
+        .setTitle("Join Other Group")
         .setMessage("Please enter the Group ID to join:")
         .setView(groupInput)
         .setCancelable(false)
@@ -88,14 +140,14 @@ private fun askForGroupIdToJoin(activity: Activity, onGroupDone: (String) -> Uni
         .create()
 
     dialog.setOnShowListener {
-        val ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        ok.setOnClickListener {
-            var groupId = groupInput.text.toString().trim()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val groupId = groupInput.text.toString().trim()
             if (groupId.isEmpty()) {
-                groupId = defaultGroupId
+                Toast.makeText(activity, "Group ID cannot be empty", Toast.LENGTH_SHORT).show()
+            } else {
+                dialog.dismiss()
+                onComplete(groupId, null) // Name is unknown, pass null
             }
-            dialog.dismiss()
-            onGroupDone(groupId)
         }
     }
     dialog.show()
