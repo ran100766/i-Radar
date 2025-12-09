@@ -12,7 +12,7 @@ class UserDataManager(private val activity: AppCompatActivity) {
     private val prefs = activity.getSharedPreferences("i-radar-prefs", Context.MODE_PRIVATE)
 
     fun initializeUserData() {
-        // Start the process by ensuring we have a username.
+        // Start the process by always asking for the username.
         ensureUserNameExists {
             // Once the username is confirmed, ensure a group ID exists.
             ensureGroupIdExists()
@@ -20,25 +20,17 @@ class UserDataManager(private val activity: AppCompatActivity) {
     }
 
     /**
-     * STEP 1: Check for a saved user name. If not found, ask the user for it.
+     * STEP 1: Always ask for the user name, suggesting the saved one if it exists.
      */
     private fun ensureUserNameExists(onComplete: () -> Unit) {
         val savedName = prefs.getString("userName", null)
 
-        if (savedName == null || savedName == MainActivity.noName)
-        {
-            // No valid name saved, so we must ask for it.
-            askForUserName(activity, suggestedName = null) { name ->
-                MainActivity.userName = name
-                prefs.edit().putString("userName", name).apply()
-                Log.d("UserData", "User name set to: $name")
-                onComplete() // Proceed to the next step (checking for group ID)
-            }
-        } else {
-            // A valid name is already saved. Load it and proceed.
-            MainActivity.userName = savedName
-            Log.d("UserData", "Loaded user name: $savedName")
-            onComplete() // Proceed to the next step
+        // Always ask for the user name, suggesting the saved one.
+        askForUserName(activity, suggestedName = savedName) { name ->
+            MainActivity.userName = name
+            prefs.edit().putString("userName", name).apply()
+            Log.d("UserData", "User name confirmed/updated to: $name")
+            onComplete() // Proceed to the next step (checking for group ID)
         }
     }
 
