@@ -3,7 +3,6 @@ package com.example.i_radar
 import android.app.Activity
 import android.content.Context
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.i_radar.MainActivity.Companion.defaultGroupId
@@ -157,7 +156,7 @@ private fun askToJoinOtherGroup(
  * HELPER: Generates a random ID for creating a new group.
  */
 private fun generateRandomGroupId(length: Int = 16): String {
-    val allowedChars = ('A'..'Z') + ('0'..'9')
+    val allowedChars = ('A'..'Z')
     return (1..length)
         .map { allowedChars.random() }
         .joinToString("")
