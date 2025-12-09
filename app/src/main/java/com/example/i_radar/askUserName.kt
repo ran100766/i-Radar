@@ -2,7 +2,9 @@ package com.example.i_radar
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.i_radar.MainActivity.Companion.defaultGroupId
@@ -112,7 +114,17 @@ private fun askToCreateNewGroup(
                 Toast.makeText(activity, "Group name cannot be empty", Toast.LENGTH_SHORT).show()
             } else {
                 dialog.dismiss()
-                onComplete(newGroupId, groupName)
+                // Save the new group to Firestore first.
+                val firestoreManager = FirestoreManager()
+                firestoreManager.createNewGroup(newGroupId, groupName) { success ->
+                    if (success) {
+                        Log.d("Firestore", "New group $groupName ($newGroupId) saved to Firestore.")
+                        // Then, pass the data back to the UserDataManager.
+                        onComplete(newGroupId, groupName)
+                    } else {
+                        Toast.makeText(activity, "Error: Could not create group.", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }

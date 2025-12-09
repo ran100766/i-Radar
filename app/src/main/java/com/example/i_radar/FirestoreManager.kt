@@ -9,6 +9,23 @@ import com.google.firebase.Timestamp
 class FirestoreManager {
     private val db = FirebaseFirestore.getInstance()
 
+    fun createNewGroup(groupId: String, groupName: String, onComplete: (Boolean) -> Unit) {
+        val groupData = hashMapOf(
+            "groupName" to groupName
+        )
+
+        db.collection("groups").document(groupId)
+            .set(groupData)
+            .addOnSuccessListener {
+                Log.d("Firestore", "Successfully created group document for $groupName")
+                onComplete(true)
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error creating group document", e)
+                onComplete(false)
+            }
+    }
+
     fun readAllLocations(onResult: (List<ReferencePoint>) -> Unit) {
         val groupDocRef = db.collection("groups").document(userGroupId)
 
