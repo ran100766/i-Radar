@@ -40,20 +40,18 @@ class UserDataManager(private val activity: AppCompatActivity) {
     private fun ensureGroupIdExists() {
         val savedGroupId = prefs.getString("userGroupId", null)
 
-        MainActivity.groupName = prefs.getString("groupName", MainActivity.noName) ?: MainActivity.noName
-
-        if (savedGroupId == null || MainActivity.groupName == MainActivity.noName) {
-            // No group ID is saved, so ask the user to choose.
+        if (savedGroupId == null) {
+            // No group ID is saved, so ask the user to choose one.
             askForGroupChoice(activity) { groupId ->
                 MainActivity.userGroupId = groupId
                 prefs.edit().putString("userGroupId", groupId).apply()
                 Log.d("UserData", "User group set to: $groupId")
             }
         } else {
-            // Group ID is already saved. Load it.
+            // Group ID is already saved. Load it and the last known group name.
             MainActivity.userGroupId = savedGroupId
-            // Also load the associated group name, if it exists.
-            Log.d("UserData", "Loaded group ID: $savedGroupId, Group Name: ${MainActivity.groupName}")
+            MainActivity.groupName = prefs.getString("groupName", "No_Name") ?: "No_Name"
+            Log.d("UserData", "Loaded group data. Group ID: $savedGroupId, Group Name: ${MainActivity.groupName}")
         }
     }
 }
