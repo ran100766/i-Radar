@@ -258,7 +258,7 @@ class MainActivity : AppCompatActivity() {
     fun copyToClipboard(text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
         clipboard?.setPrimaryClip(ClipData.newPlainText("Group Key", text))
-        Toast.makeText(this, "Group key copied!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Group key copied: " + text, Toast.LENGTH_SHORT).show()
     }
 
 }
