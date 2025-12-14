@@ -125,6 +125,7 @@ private fun askToCreateNewGroup(
                     if (success) {
                         Log.d("Firestore", "New group $groupName ($newGroupId) saved to Firestore.")
                         // Then, pass the data back to the UserDataManager.
+                        copyToClipboard(activity, newGroupId)
                         onComplete(newGroupId)
                     } else {
                         Toast.makeText(activity, "Error: Could not create group.", Toast.LENGTH_LONG).show()
