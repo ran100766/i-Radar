@@ -1,6 +1,8 @@
 package com.example.i_radar
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.EditText
@@ -51,20 +53,20 @@ fun askForUserName(
  */
 fun askForGroupChoice(
     activity: Activity,
-    onGroupInfoEntered: (groupId: String, groupName: String?) -> Unit
+    onGroupInfoEntered: (groupId: String) -> Unit
 ) {
     val prefs = activity.getSharedPreferences("i-radar-prefs", Context.MODE_PRIVATE)
     val savedGroupId = prefs.getString("userGroupId", null)
-    val savedGroupName = prefs.getString("groupName", null)
+//    val savedGroupName = prefs.getString("groupName", null)
 
     val options = mutableListOf<String>()
 
-    Log.d("Saved_Groups", "Saved_Groups: $savedGroupId  $savedGroupName .")
+    Log.d("Saved_Group", "Saved_Group: $savedGroupId  .")
 
 
     // Only show the 'Join last group' option if a valid group is saved.
-    if (savedGroupId != null && savedGroupName != null && savedGroupName != noName) {
-        options.add("Join last group ($savedGroupName)")
+    if (savedGroupId != null ) {
+        options.add("Join last group")
     }
     options.add("Join other existing group")
     options.add("Create new group")
@@ -76,7 +78,7 @@ fun askForGroupChoice(
             when {
                 selectedOption.startsWith("Join last group") -> {
                     // This is only shown if savedGroupId and savedGroupName are valid.
-                    onGroupInfoEntered(savedGroupId!!, savedGroupName)
+                    onGroupInfoEntered(savedGroupId!!)
                 }
                 selectedOption == "Join other existing group" -> {
                     askToJoinOtherGroup(activity, onGroupInfoEntered)
@@ -95,16 +97,16 @@ fun askForGroupChoice(
  */
 private fun askToCreateNewGroup(
     activity: Activity,
-    onComplete: (groupId: String, groupName: String) -> Unit
+    onComplete: (groupId: String) -> Unit
 ) {
     val newGroupId = generateRandomGroupId()
     val nameInput = EditText(activity).apply {
-        hint = "My Awesome Group"
+        hint = "    "
     }
 
     val dialog = AlertDialog.Builder(activity)
         .setTitle("Create New Group")
-        .setMessage("Your new Group ID is: $newGroupId\n\nPlease give your group a name:")
+        .setMessage("Your new Group key is: $newGroupId\n\nPlease enter a group name:")
         .setView(nameInput)
         .setCancelable(false)
         .setPositiveButton("OK", null)
@@ -123,7 +125,7 @@ private fun askToCreateNewGroup(
                     if (success) {
                         Log.d("Firestore", "New group $groupName ($newGroupId) saved to Firestore.")
                         // Then, pass the data back to the UserDataManager.
-                        onComplete(newGroupId, groupName)
+                        onComplete(newGroupId)
                     } else {
                         Toast.makeText(activity, "Error: Could not create group.", Toast.LENGTH_LONG).show()
                     }
@@ -139,7 +141,7 @@ private fun askToCreateNewGroup(
  */
 private fun askToJoinOtherGroup(
     activity: Activity,
-    onComplete: (groupId: String, groupName: String?) -> Unit
+    onComplete: (groupId: String) -> Unit
 ) {
     val groupInput = EditText(activity).apply {
         hint = "Enter or paste Group ID"
@@ -160,7 +162,7 @@ private fun askToJoinOtherGroup(
                 Toast.makeText(activity, "Group ID cannot be empty", Toast.LENGTH_SHORT).show()
             } else {
                 dialog.dismiss()
-                onComplete(groupId, null) // Name is unknown, pass null
+                onComplete(groupId) // Name is unknown, pass null
             }
         }
     }

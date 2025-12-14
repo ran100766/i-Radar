@@ -3,6 +3,7 @@ package com.example.i_radar
 import android.content.Context
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.i_radar.MainActivity.Companion.userGroupId
 
 /**
  * Handles the sequential loading and setup of user data (name and group).
@@ -40,15 +41,14 @@ class UserDataManager(private val activity: AppCompatActivity) {
     private fun ensureGroupIdExists() {
         // Always ask the user to choose a group.
         // The dialog will intelligently suggest saved values from SharedPreferences.
-        askForGroupChoice(activity) { groupId, groupName ->
+        askForGroupChoice(activity) { groupId ->
             MainActivity.userGroupId = groupId
             prefs.edit().putString("userGroupId", groupId).apply()
 
             // If a new group was created, its name is passed back and saved.
-            if (groupName != null) {
-                MainActivity.groupName = groupName
-                prefs.edit().putString("groupName", groupName).apply()
-                Log.d("UserData", "New group created. Group ID: $groupId, Name: $groupName")
+            if (userGroupId != null) {
+                MainActivity.userGroupId = groupId
+                Log.d("UserData", "New group created. Group ID: $groupId ")
             } else {
                 // When joining, the groupName is null. We will load the real one from Firestore later.
                 Log.d("UserData", "Joined/Confirmed existing group. Group ID: $groupId")
