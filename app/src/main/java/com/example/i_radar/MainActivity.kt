@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         upToDateCount = 0
         outDatedCount = 0
 
-        fullLocationsList = referencePoints.map { point ->
+        fullLocationsList = referencePoints.filter { it.name != userName }.map { point ->
 
             // Check recency
             val isUpToDate = point.lastUpdate?.let {
