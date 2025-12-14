@@ -59,8 +59,11 @@ fun askForGroupChoice(
 
     val options = mutableListOf<String>()
 
+    Log.d("Saved_Groups", "Saved_Groups: $savedGroupId  $savedGroupName .")
+
+
     // Only show the 'Join last group' option if a valid group is saved.
-    if (savedGroupId != null && savedGroupId != defaultGroupId && savedGroupName != null && savedGroupName != noName) {
+    if (savedGroupId != null && savedGroupName != null && savedGroupName != noName) {
         options.add("Join last group ($savedGroupName)")
     }
     options.add("Join other existing group")
