@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         val noName = "No_Name"
 
-        val defaultGroupId = "RANGROUP17"
+        val defaultGroupId = "..."
         var userName: String = noName
 
         var userGroupId: String = defaultGroupId
@@ -130,7 +130,6 @@ class MainActivity : AppCompatActivity() {
             smoothedAzimuth = smoothAzimuth(smoothedAzimuth, azimuth)
 
             showCompasArrow(this, fullLocationsList, smoothedAzimuth)
-            showPointsOnCompas(this, fullLocationsList, smoothedAzimuth)
         }
 
 
@@ -208,6 +207,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         showPointsOnList(this, fullLocationsList)
+        showPointsOnCompas(this, fullLocationsList, smoothedAzimuth)
     }
 
     private fun printHeader() {

@@ -105,8 +105,8 @@ private fun askToCreateNewGroup(
     }
 
     val dialog = AlertDialog.Builder(activity)
-        .setTitle("Create New Group")
-        .setMessage("Your new Group key is: $newGroupId\n\nPlease enter a group name:")
+        .setTitle("New Group key:               ")
+        .setMessage("$newGroupId\n\n\n\nPlease enter a group name:")
         .setView(nameInput)
         .setCancelable(false)
         .setPositiveButton("OK", null)
