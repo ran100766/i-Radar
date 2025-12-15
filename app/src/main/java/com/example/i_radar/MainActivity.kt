@@ -162,7 +162,6 @@ class MainActivity : AppCompatActivity() {
             // 2. Call the method on the instance
             userDataManager.ensureGroupIdExists()
             copyToClipboard(this, userGroupId)
-
         }
     }
 
