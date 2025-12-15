@@ -77,6 +77,15 @@
             android:layout_height="300dp"
             android:layout_gravity="center">
 
+            <!-- Direction arrow -->
+            <ImageView
+                android:id="@+id/directionArrow"
+                android:layout_width="200dp"
+                android:layout_height="240dp"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/arrow" />
+
             <!-- Outer circle (light green border) -->
             <ImageView
                 android:id="@+id/compassCircle"
@@ -103,16 +112,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center" />
-
-            <!-- Direction arrow -->
-            <ImageView
-                android:id="@+id/directionArrow"
-                android:layout_width="200dp"
-                android:layout_height="240dp"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:src="@drawable/arrow" />
-
 
         </FrameLayout>
 
