@@ -31,8 +31,9 @@ fun askForUserName(
         .setTitle("Your Name")
         .setMessage("Please enter your name:")
         .setView(nameInput)
-        .setCancelable(false)
+        .setCancelable(true)
         .setPositiveButton("OK", null)
+        .setNegativeButton("Cancel", null)
         .create()
 
     dialog.setOnShowListener {
@@ -108,8 +109,9 @@ private fun askToCreateNewGroup(
         .setTitle("New Group key:               ")
         .setMessage("$newGroupId\n\n\n\nPlease enter a group name:")
         .setView(nameInput)
-        .setCancelable(false)
+        .setCancelable(true)
         .setPositiveButton("OK", null)
+        .setNegativeButton("Cancel", null)
         .create()
 
     dialog.setOnShowListener {
@@ -145,15 +147,16 @@ private fun askToJoinOtherGroup(
     onComplete: (groupId: String) -> Unit
 ) {
     val groupInput = EditText(activity).apply {
-        hint = "Enter or paste Group ID"
+        hint = "Enter or paste Group key"
     }
 
     val dialog = AlertDialog.Builder(activity)
-        .setTitle("Join Other Group")
-        .setMessage("Please enter the Group ID to join:")
+        .setTitle("Join Other Group               ")
+        .setMessage("Please enter the Group key to join:")
         .setView(groupInput)
-        .setCancelable(false)
+        .setCancelable(true)
         .setPositiveButton("OK", null)
+        .setNegativeButton("Cancel", null)
         .create()
 
     dialog.setOnShowListener {
@@ -162,8 +165,13 @@ private fun askToJoinOtherGroup(
             if (groupId.isEmpty()) {
                 Toast.makeText(activity, "Group ID cannot be empty", Toast.LENGTH_SHORT).show()
             } else {
-                dialog.dismiss()
-                onComplete(groupId) // Name is unknown, pass null
+                val allowedChars = ('A'..'Z')
+                if (groupId.length == 16 && groupId.all { it in allowedChars }) {
+                    dialog.dismiss()
+                    onComplete(groupId)
+                } else {
+                    Toast.makeText(activity, "Invalid group key. Must be 16 uppercase letters.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
