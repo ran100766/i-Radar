@@ -130,6 +130,7 @@ class MainActivity : AppCompatActivity() {
             smoothedAzimuth = smoothAzimuth(smoothedAzimuth, azimuth)
 
             showCompasArrow(this, fullLocationsList, smoothedAzimuth)
+            showPointsOnCompas(this, fullLocationsList, smoothedAzimuth)
         }
 
 
@@ -156,7 +157,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         tvGroupKey.setOnClickListener {
+            // 1. Create an instance of UserDataManager, passing the current activity
+            val userDataManager = UserDataManager(this)
+            // 2. Call the method on the instance
+            userDataManager.ensureGroupIdExists()
             copyToClipboard(this, userGroupId)
+
         }
     }
 
@@ -207,7 +213,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         showPointsOnList(this, fullLocationsList)
-        showPointsOnCompas(this, fullLocationsList, smoothedAzimuth)
     }
 
     private fun printHeader() {

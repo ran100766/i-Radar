@@ -23,7 +23,7 @@ class UserDataManager(private val activity: AppCompatActivity) {
     /**
      * STEP 1: Always ask for the user name, suggesting the saved one if it exists.
      */
-    private fun ensureUserNameExists(onComplete: () -> Unit) {
+    fun ensureUserNameExists(onComplete: () -> Unit) {
         val savedName = prefs.getString("userName", null)
 
         // Always ask for the user name, suggesting the saved one.
@@ -38,7 +38,7 @@ class UserDataManager(private val activity: AppCompatActivity) {
     /**
      * STEP 2: Always ask the user to join or create a group.
      */
-    private fun ensureGroupIdExists() {
+    fun ensureGroupIdExists() {
         // Always ask the user to choose a group.
         // The dialog will intelligently suggest saved values from SharedPreferences.
         askForGroupChoice(activity) { groupId ->
