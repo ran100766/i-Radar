@@ -2,8 +2,6 @@ package com.example.i_radar
 
 import CompassManager
 import android.Manifest
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -14,7 +12,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
@@ -160,7 +157,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         tvGroupKey.setOnClickListener {
-            copyToClipboard(userGroupId)
+            copyToClipboard(this, userGroupId)
         }
     }
 
@@ -254,11 +251,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Function to copy text
-    fun copyToClipboard(text: String) {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-        clipboard?.setPrimaryClip(ClipData.newPlainText("Group Key", text))
-        Toast.makeText(this, "Group key copied: " + text, Toast.LENGTH_SHORT).show()
-    }
+
 
 }
