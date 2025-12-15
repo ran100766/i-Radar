@@ -116,9 +116,9 @@ fun showPointsOnCompas(
 
 // Combine the arrow into the formatted string
             val text = String.format(
-                "%-14s %-6d %c",
+                "%-14s %-6s %c",
                 point.point.name.take(14),
-                point.distance.toInt(),
+                formatDistance(point.distance.toInt()),
                 arrowChar
             )
 
