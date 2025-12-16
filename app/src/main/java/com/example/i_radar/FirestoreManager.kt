@@ -1,6 +1,7 @@
 package com.example.i_radar  // <-- use your actual package name
 
 import android.util.Log
+import com.example.i_radar.MainActivity.Companion.groupDefault
 import com.example.i_radar.MainActivity.Companion.userGroupId
 import com.example.i_radar.MainActivity.Companion.groupName
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,7 +33,7 @@ class FirestoreManager {
         // 1. Get the main group document to read its fields (like 'group_name')
         groupDocRef.get()
             .addOnSuccessListener { groupDocument ->
-                groupName = groupDocument.getString("groupName") ?: "No Name"
+                groupName = groupDocument.getString("groupName") ?: groupDefault
                 Log.d("Firestore", "Successfully read group name: $groupName")
 
                 // 2. Then, get the devices in the subcollection

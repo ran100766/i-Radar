@@ -27,13 +27,14 @@ private const val FIVE_MINUTES_MS = 5 * 60 * 1000
 class MainActivity : AppCompatActivity() {
     companion object {
         val noName = "No_Name"
+        val groupDefault = "Reading..."
 
         val defaultGroupId = "..."
         var userName: String = noName
 
         var userGroupId: String = defaultGroupId
 
-        var groupName: String = noName
+        var groupName: String = groupDefault
 
     }
 
