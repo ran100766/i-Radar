@@ -166,11 +166,11 @@ private fun askToJoinOtherGroup(
                 Toast.makeText(activity, "Group ID cannot be empty", Toast.LENGTH_SHORT).show()
             } else {
                 val allowedChars = ('A'..'Z')
-                if (groupId.length == 16 && groupId.all { it in allowedChars }) {
+                if (groupId.length == 10 && groupId.all { it in allowedChars }) {
                     dialog.dismiss()
                     onComplete(groupId)
                 } else {
-                    Toast.makeText(activity, "Invalid group key. Must be 16 uppercase letters.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Invalid group key. Must be 10 uppercase letters.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -181,7 +181,7 @@ private fun askToJoinOtherGroup(
 /**
  * HELPER: Generates a random ID for creating a new group.
  */
-private fun generateRandomGroupId(length: Int = 16): String {
+private fun generateRandomGroupId(length: Int = 10): String {
     val allowedChars = ('A'..'Z')
     return (1..length)
         .map { allowedChars.random() }
