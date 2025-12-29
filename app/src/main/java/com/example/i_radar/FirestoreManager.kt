@@ -131,34 +131,45 @@ class FirestoreManager {
             return
         }
 
-        val uid = user.uid
-        val displayName = point.name   // 🔥 document ID = displayName
-
-        val deviceDocRef = FirebaseFirestore.getInstance()
-            .collection("groups")
-            .document(userGroupId)
-            .collection("devices")
-            .document(displayName) // ✅ SAME AS C++
-
-        val data = hashMapOf(
-            "latitude" to point.lat,
-            "longitude" to point.lon,
-            "lastUpdate" to Timestamp.now(),
-            "name" to displayName,
-            "ownerUid" to uid           // ✅ REQUIRED BY RULES
-        )
-
-        deviceDocRef
-            .set(data, SetOptions.merge()) // PATCH-like behavior
-            .addOnSuccessListener {
-                Log.d("Firestore", "Device $displayName written successfully")
-                onComplete(true)
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Failed to write device", e)
+        // FIX: Add the missing permission check before writing
+        ensureGroupJoined(userGroupId) { joined ->
+            if (!joined) {
+                Log.e("Firestore", "User is not a member of group $userGroupId, write failed")
                 onComplete(false)
+                return@ensureGroupJoined
             }
+
+            // --- Original code continues now that permissions are checked ---
+            val uid = user.uid
+            val displayName = point.name
+
+            val deviceDocRef = FirebaseFirestore.getInstance()
+                .collection("groups")
+                .document(userGroupId)
+                .collection("devices")
+                .document(displayName)
+
+            val data = hashMapOf(
+                "latitude" to point.lat,
+                "longitude" to point.lon,
+                "lastUpdate" to Timestamp.now(),
+                "name" to displayName,
+                "ownerUid" to uid // REQUIRED BY RULES
+            )
+
+            deviceDocRef
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Device $displayName written successfully")
+                    onComplete(true)
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firestore", "Failed to write device", e)
+                    onComplete(false)
+                }
+        }
     }
+
 
     fun joinGroup(groupId: String, onComplete: (Boolean) -> Unit) {
         val uid = FirebaseAuth.getInstance().uid ?: return
@@ -171,7 +182,7 @@ class FirestoreManager {
             .collection("groups")
             .document(groupId)
             .collection("members")
-            .document(uid)          // 👈 THIS IS STEP 6
+            .document(uid)
             .set(memberData)
             .addOnSuccessListener {
                 onComplete(true)
@@ -202,7 +213,7 @@ class FirestoreManager {
                     // Already a member
                     onReady(true)
                 } else {
-                    // Join group (STEP 6)
+                    // Join group
                     joinGroup(groupId, onReady)
                 }
             }
