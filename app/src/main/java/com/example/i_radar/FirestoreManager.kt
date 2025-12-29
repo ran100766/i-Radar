@@ -7,6 +7,7 @@ import com.example.i_radar.MainActivity.Companion.groupName
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.SetOptions
 
 class FirestoreManager {
 
@@ -123,62 +124,40 @@ class FirestoreManager {
     }
 
     fun writeLocation(point: ReferencePoint, onComplete: (Boolean) -> Unit) {
-        val uid = FirebaseAuth.getInstance().uid
-        if (uid == null) {
-            Log.e("Firestore", "Cannot write location, user not authenticated.")
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Log.e("Firestore", "User not authenticated")
             onComplete(false)
             return
         }
 
-        // STEP 6: Ensure user is joined
-        ensureGroupJoined(userGroupId) { joined ->
-            if (!joined) {
-                Log.e("Firestore", "User is not a member of group $userGroupId")
-                onComplete(false)
-                return@ensureGroupJoined
+        val uid = user.uid
+        val displayName = point.name   // 🔥 document ID = displayName
+
+        val deviceDocRef = FirebaseFirestore.getInstance()
+            .collection("groups")
+            .document(userGroupId)
+            .collection("devices")
+            .document(displayName) // ✅ SAME AS C++
+
+        val data = hashMapOf(
+            "latitude" to point.lat,
+            "longitude" to point.lon,
+            "lastUpdate" to Timestamp.now(),
+            "name" to displayName,
+            "ownerUid" to uid           // ✅ REQUIRED BY RULES
+        )
+
+        deviceDocRef
+            .set(data, SetOptions.merge()) // PATCH-like behavior
+            .addOnSuccessListener {
+                Log.d("Firestore", "Device $displayName written successfully")
+                onComplete(true)
             }
-
-            val deviceDocRef = db.collection("groups")
-                .document(userGroupId)
-                .collection("devices")
-                .document(uid)
-
-            // 1️⃣ Get last update
-            deviceDocRef.get()
-                .addOnSuccessListener { doc ->
-                    val lastUpdate = doc.getTimestamp("lastUpdate")?.toDate()?.time ?: 0
-                    val now = System.currentTimeMillis()
-
-                    val minIntervalMs = 5000L // 5 seconds
-                    if (now - lastUpdate < minIntervalMs) {
-                        Log.w("Firestore", "Write skipped due to rate limiting")
-                        onComplete(false)
-                        return@addOnSuccessListener
-                    }
-
-                    // 2️⃣ Build data and write
-                    val data = hashMapOf(
-                        "latitude" to point.lat,
-                        "longitude" to point.lon,
-                        "lastUpdate" to Timestamp.now(),
-                        "name" to point.name
-                    )
-
-                    deviceDocRef.set(data)
-                        .addOnSuccessListener {
-                            Log.d("Firestore", "Wrote device ${point.name}")
-                            onComplete(true)
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("Firestore", "Error writing location", e)
-                            onComplete(false)
-                        }
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Firestore", "Failed to read lastUpdate", e)
-                    onComplete(false)
-                }
-        }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Failed to write device", e)
+                onComplete(false)
+            }
     }
 
     fun joinGroup(groupId: String, onComplete: (Boolean) -> Unit) {
