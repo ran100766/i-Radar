@@ -131,7 +131,7 @@ class FirestoreManager {
             return
         }
 
-        // FIX: Add the missing permission check before writing
+        // Ensure user is a member before writing
         ensureGroupJoined(userGroupId) { joined ->
             if (!joined) {
                 Log.e("Firestore", "User is not a member of group $userGroupId, write failed")
@@ -139,7 +139,6 @@ class FirestoreManager {
                 return@ensureGroupJoined
             }
 
-            // --- Original code continues now that permissions are checked ---
             val uid = user.uid
             val displayName = point.name
 
@@ -149,24 +148,39 @@ class FirestoreManager {
                 .collection("devices")
                 .document(displayName)
 
-            val data = hashMapOf(
-                "latitude" to point.lat,
-                "longitude" to point.lon,
-                "lastUpdate" to Timestamp.now(),
-                "name" to displayName,
-                "ownerUid" to uid // REQUIRED BY RULES
-            )
+            // Optimization: Read first to rate-limit writes
+            deviceDocRef.get().addOnSuccessListener { doc ->
+                val lastUpdate = doc.getTimestamp("lastUpdate")?.toDate()?.time ?: 0
+                val now = System.currentTimeMillis()
+                val minIntervalMs = 5000L // 5 seconds
 
-            deviceDocRef
-                .set(data, SetOptions.merge())
-                .addOnSuccessListener {
-                    Log.d("Firestore", "Device $displayName written successfully")
-                    onComplete(true)
+                if (now - lastUpdate < minIntervalMs) {
+                    Log.d("Firestore", "Write skipped due to rate limiting.")
+                    onComplete(true) // Report success even if skipped
+                    return@addOnSuccessListener
                 }
-                .addOnFailureListener { e ->
-                    Log.e("Firestore", "Failed to write device", e)
-                    onComplete(false)
-                }
+
+                val data = hashMapOf(
+                    "latitude" to point.lat,
+                    "longitude" to point.lon,
+                    "lastUpdate" to Timestamp.now(),
+                    "name" to displayName,
+                    "ownerUid" to uid
+                )
+
+                deviceDocRef.set(data, SetOptions.merge())
+                    .addOnSuccessListener {
+                        Log.d("Firestore", "Device $displayName written successfully")
+                        onComplete(true)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "Failed to write device", e)
+                        onComplete(false)
+                    }
+            }.addOnFailureListener { e ->
+                Log.e("Firestore", "Failed to read device for rate-limiting", e)
+                onComplete(false)
+            }
         }
     }
 
