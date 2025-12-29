@@ -216,10 +216,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun printHeader() {
-        tvGroupKey.text = "Group: $groupName"
-        tvUserName.text = userName
-         tmMembersOnline.text = "Online: $upToDateCount ▲"
-         tmMembersOffline.text = "Offline: $outDatedCount ▼"
+        val maxChars = 15
+        val truncatedGroupName = if (groupName.length > maxChars) "${groupName.take(maxChars)}..." else groupName
+        val truncatedUserName = if (userName.length > maxChars) "${userName.take(maxChars)}..." else userName
+
+        tvGroupKey.text = "Group: $truncatedGroupName"
+        tvUserName.text = truncatedUserName
+        tmMembersOnline.text = "Online: $upToDateCount ▲"
+        tmMembersOffline.text = "Offline: $outDatedCount ▼"
     }
 
 
