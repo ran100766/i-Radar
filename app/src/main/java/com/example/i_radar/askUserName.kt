@@ -1,16 +1,16 @@
 package com.example.i_radar
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.LinearLayout
+import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.example.i_radar.MainActivity.Companion.defaultGroupId
-import com.example.i_radar.MainActivity.Companion.noName
+import com.example.i_radar.MainActivity.Companion.userGroupId
 
 /**
  * PUBLIC: Asks the user for their name.
@@ -40,7 +40,7 @@ fun askForUserName(
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             var name = nameInput.text.toString().trim()
             if (name.isEmpty()) {
-                name = noName // Use default if empty
+                name = MainActivity.noName // Use default if empty
             }
             dialog.dismiss()
             onNameDone(name)
@@ -58,39 +58,52 @@ fun askForGroupChoice(
 ) {
     val prefs = activity.getSharedPreferences("i-radar-prefs", Context.MODE_PRIVATE)
     val savedGroupId = prefs.getString("userGroupId", null)
-//    val savedGroupName = prefs.getString("groupName", null)
+    val savedGroupName = prefs.getString("groupName", null)
+
+    Log.d("SavedPref", "Last group name: $savedGroupName; Last group id: $savedGroupId.")
 
     val options = mutableListOf<String>()
 
-    Log.d("Saved_Group", "Saved_Group: $savedGroupId  .")
-
-
     // Only show the 'Join last group' option if a valid group is saved.
-    if (savedGroupId != null ) {
-        options.add("Join last group")
+    if (savedGroupId != null && savedGroupName != null) {
+        options.add("Join last group: $savedGroupId")
     }
     options.add("Join other existing group")
     options.add("Create new group")
 
-    AlertDialog.Builder(activity)
+    val layoutInflater = LayoutInflater.from(activity)
+    val customView = layoutInflater.inflate(R.layout.dialog_group_choice, null)
+
+    val groupNameTextView = customView.findViewById<TextView>(R.id.current_group_name)
+    val optionsListView = customView.findViewById<ListView>(R.id.group_options_list)
+
+    val adapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, options)
+    optionsListView.adapter = adapter
+
+    val dialog = AlertDialog.Builder(activity)
         .setTitle("Group Setup")
-        .setItems(options.toTypedArray()) { _, which ->
-            val selectedOption = options[which]
-            when {
-                selectedOption.startsWith("Join last group") -> {
-                    // This is only shown if savedGroupId and savedGroupName are valid.
-                    onGroupInfoEntered(savedGroupId!!)
-                }
-                selectedOption == "Join other existing group" -> {
-                    askToJoinOtherGroup(activity, onGroupInfoEntered)
-                }
-                selectedOption == "Create new group" -> {
-                    askToCreateNewGroup(activity, onGroupInfoEntered)
-                }
+        .setView(customView)
+        .setNegativeButton("Cancel", null)
+        .create()
+
+    optionsListView.setOnItemClickListener { _, _, position, _ ->
+        val selectedOption = options[position]
+        when {
+            selectedOption.startsWith("Join last group") -> {
+                onGroupInfoEntered(savedGroupId!!)
+            }
+            selectedOption == "Join other existing group" -> {
+                askToJoinOtherGroup(activity, onGroupInfoEntered)
+            }
+            selectedOption == "Create new group" -> {
+                askToCreateNewGroup(activity, onGroupInfoEntered)
             }
         }
-        .setCancelable(false)
-        .show()
+        dialog.dismiss()
+    }
+
+
+    dialog.show()
 }
 
 /**
@@ -187,3 +200,4 @@ private fun generateRandomGroupId(length: Int = 10): String {
         .map { allowedChars.random() }
         .joinToString("")
 }
+
