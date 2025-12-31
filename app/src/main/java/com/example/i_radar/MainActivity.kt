@@ -2,6 +2,7 @@ package com.example.i_radar
 
 import CompassManager
 import android.Manifest
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -12,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
@@ -46,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     public lateinit var tvUserName: TextView
     private lateinit var tmMembersOnline: TextView
     private lateinit var tmMembersOffline: TextView
+    private lateinit var tvFooter: TextView
+
     private val uiUpdateHandler = Handler(Looper.getMainLooper())
 
     // Counters
@@ -139,11 +143,22 @@ class MainActivity : AppCompatActivity() {
         tvUserName = findViewById(R.id.tvUserName)
         tmMembersOnline = findViewById(R.id.tvMembersOnline)
         tmMembersOffline = findViewById(R.id.tvMembersOffline)
+        tvFooter = findViewById(R.id.tvFooter)
 
         FirebaseApp.initializeApp(this)
 
         // Use the new manager to handle user data loading and setup.
         UserDataManager(this).initializeUserData()
+
+        tvFooter.setOnClickListener {
+            val dialog = Dialog(this)
+            dialog.setContentView(R.layout.dialog_developer_info)
+            val btnOk = dialog.findViewById<Button>(R.id.btnOk)
+            btnOk.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
 
         locationPermissionRequest.launch(locationPermissions)
         requestIgnoreBatteryOptimizations()
